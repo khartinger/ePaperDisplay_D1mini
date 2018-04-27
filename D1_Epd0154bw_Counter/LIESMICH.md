@@ -12,7 +12,7 @@ Dieses Programm zeigt einen Z&auml;hlerstand auf einem e-Paper Display an (1,54 
 * Waveshare e-paper display (1.54 inch, 200x200 px, schwarz-wei&szlig;).
 * Eventuell Protoboard mit Anschl&uuml;ssen f&uuml;r den SPI-Bus
 
-![D1 epd0154bw Counter](./images/D1_epd0154bw_counter.png "D1mini mit ePaper display 1,54inch Counter")   
+![D1 epd0154bw Counter](./images/D1_Epd0154bw_counter.png "D1mini mit ePaper display 1,54inch Counter")   
 
 ## Beispiel f&uuml;r die Ausgabe auf der seriellen Schnittstelle
 
