@@ -9,4 +9,4 @@ Dieses Programm schreibt Text in verschiedenen Gr&ouml;&szlig;en auf ein e-Paper
 * Waveshare e-paper display (1,54 inch, 200x200 px, schwarz-wei&szlig;).
 * Eventuell Protoboard mit Anschl&uuml;ssen f&uuml;r den SPI- und I2C-Bus
 
-![D1 epd0154bw Text](./images/D1_epd0154bw_text.png "D1mini mit ePaper display 1,54inch Textausgabe")   
+![D1 epd0154bw Text](./images/D1_Epd0154bw_text.png "D1mini mit ePaper display 1,54inch Textausgabe")   
