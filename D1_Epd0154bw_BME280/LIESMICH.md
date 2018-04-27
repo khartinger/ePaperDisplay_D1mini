@@ -10,7 +10,7 @@ Messung von Temperatur, Luftfeuchtigkeit, Luftdruck/H&ouml;he mit einem BME280-S
 * BME280 am I2C: SCL=D1,SDA=D2,GND,3V3 (I2C-Adresse 0x76)
 * Eventuell Protoboard mit Anschl&uuml;ssen f&uuml;r den SPI- und I2C-Bus
 
-![D1 epd0154bw MBE280](./images/D1_epd0154bw_bme280.png "D1mini mit e-Paper-Display 1,54inch und BME280")  
+![D1 epd0154bw MBE280](./images/D1_Epd0154bw_bme280.png "D1mini mit e-Paper-Display 1,54inch und BME280")  
 
 ## Beispiel f&uuml;r die Ausgabe auf der seriellen Schnittstelle
 
