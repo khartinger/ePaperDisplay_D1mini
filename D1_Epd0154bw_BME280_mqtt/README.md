@@ -20,7 +20,7 @@ __*Don't forget to change WiFi data to your network values*__ in line
 * BME280 connected to I2C: SCL=D1,SDA=D2,GND,3V3 (I2C-address 0x76)
 * Upon request: protoboard with spi and i2c connection
 
-![D1 epd0154bw MBE280 MQTT](./images/D1_epd0154bw_bme280_mqtt.png "D1mini with ePaper display 1.54inch, BME280 and MQTT Publisher")   
+![D1 epd0154bw MBE280 MQTT](./images/D1_Epd0154bw_bme280_mqtt.png "D1mini with ePaper display 1.54inch, BME280 and MQTT Publisher")   
 
 ## Example for Serial output
 
