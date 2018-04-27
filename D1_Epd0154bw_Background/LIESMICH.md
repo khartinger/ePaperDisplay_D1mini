@@ -9,4 +9,4 @@ Dieses Programm zeichnet ein Hintergrundbild aus dem Programmspeicher auf ein e-
 * Waveshare e-paper display (1,54 inch, 200x200 px, schwarz-wei&szlig;).
 * Eventuell Protoboard mit Anschl&uuml;ssen f&uuml;r den SPI- und I2C-Bus
 
-![D1 epd0154bw Hintergrundbild](./images/D1_epd0154bw_background.png "D1mini mit ePaper display 1,54inch Hintergrundbild")   
+![D1 epd0154bw Hintergrundbild](./images/D1_Epd0154bw_background.png "D1mini mit ePaper display 1,54inch Hintergrundbild")   
