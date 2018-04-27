@@ -10,7 +10,7 @@ Measure temperature, humidity, pressure/altitude with a BME280 every 5 seconds a
 * BME280 connected to I2C: SCL=D1,SDA=D2,GND,3V3 (I2C-address 0x76)
 * Upon request: protoboard with spi and i2c connection
 
-![D1 epd0154bw MBE280](./images/D1_epd0154bw_bme280.png "D1mini with ePaper display 1.54inch and BME280")   
+![D1 epd0154bw MBE280](./images/D1_Epd0154bw_bme280.png "D1mini with ePaper display 1.54inch and BME280")   
 
 ## Example for Serial output
 
