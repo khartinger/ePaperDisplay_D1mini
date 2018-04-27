@@ -12,7 +12,7 @@ Demo program to display a counter value on a 2-color epd (e-paper display: 1.54 
 * Waveshare e-paper display (1.54 inch, 200x200 px, black and white).  
 * Upon request: protoboard with spi and i2c connection
 
-![D1 epd0154bw Counter](./images/D1_epd0154bw_counter.png "D1mini mit ePaper display 1,54inch Counter")   
+![D1 epd0154bw Counter](./images/D1_Epd0154bw_counter.png "D1mini mit ePaper display 1,54inch Counter")   
 
 ## Example for Serial output
 
