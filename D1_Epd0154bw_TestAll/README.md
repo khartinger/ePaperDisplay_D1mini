@@ -9,6 +9,7 @@ Demo program to display text and shapes like lines, triangles, rectangles and ci
 * Waveshare e-paper display (1.54 inch, 200x200 px, black and white).  
 * Upon request: protoboard with spi and i2c connection
 
-![D1 epd0154bw test all1](./images/D1_epd0154bw_testall1.png "D1mini with ePaper display 1.54inch test all 1")     
 
-![D1 epd0154bw test all2](./images/D1_epd0154bw_testall2.png "D1mini mit ePaper display 1,54inch test all 2")   
+![D1 epd0154bw test all1](./images/D1_Epd0154bw_textall1.png "D1mini mit ePaper display 1,54inch test all 1")    
+
+![D1 epd0154bw test all2](./images/D1_Epd0154bw_testall2.png "D1mini mit ePaper display 1,54inch test all 2")   
