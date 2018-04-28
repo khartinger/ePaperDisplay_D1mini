@@ -1,4 +1,4 @@
-//_____D1_class_MqttClientKH.cpp______________170721-180305_____
+//_____D1_class_MqttClientKH.cpp______________170721-180428_____
 // The class MqttClient extends the class PubSubClient vor an
 //  easy use of mqtt.
 // You can use all commands from class PubSubClient as well.
@@ -55,6 +55,41 @@ void MqttClientKH::setup()
 }
 
 //**************************************************************
+// setter and getter methods
+//**************************************************************
+// NEW 180428
+String MqttClientKH::getsClientState(int client_state) 
+{
+ String s1;
+ s1="#"+String(client_state)+" ";
+ switch(client_state)
+ {
+  case MQTT_CONNECTION_TIMEOUT: // -4
+   s1+="MQTT connection timeout"; break;
+  case MQTT_CONNECTION_LOST: // -3
+   s1+="MQTT connection lost"; break;
+  case MQTT_CONNECT_FAILED: // -2
+   s1+="MQTT connect failed"; break;
+  case MQTT_DISCONNECTED: // -1
+   s1+="MQTT disconnected"; break;
+  case MQTT_CONNECTED: // 0
+   s1+="MQTT connected"; break;
+  case MQTT_CONNECT_BAD_PROTOCOL: //    1
+   s1+="MQTT CONNECT_BAD_PROTOCOL"; break;
+  case MQTT_CONNECT_BAD_CLIENT_ID: //   2
+   s1+="MQTT CONNECT_BAD_CLIENT_ID"; break;
+  case MQTT_CONNECT_UNAVAILABLE: //     3
+   s1+="MQTT CONNECT_UNAVAILABLE"; break;
+  case MQTT_CONNECT_BAD_CREDENTIALS: // 4
+   s1+="MQTT CONNECT_BAD_CREDENTIALS"; break;
+  case MQTT_CONNECT_UNAUTHORIZED: //    5
+   s1+="MQTT connnect unauthorized"; break;
+ default: s1+="Unknown state"; break;
+ }
+ return s1;
+}
+
+//**************************************************************
 // methods to setup WLAN and mqtt connection
 //**************************************************************
 
@@ -64,6 +99,7 @@ bool MqttClientKH::setup_wifi()
  if(WiFi.status()==WL_CONNECTED) return true;
  delay(10);
  if(DEBUG_MQTT) Serial.println("\nConnecting to "+String(ssid_));
+ WiFi.mode(WIFI_STA);                              // NEW 180428
  WiFi.begin(ssid_, pass_);
  //-----try to connect to WLAN (access point)-------------------
  int i=TIMEOUT_WIFI_CONNECT_MS/200;
@@ -96,7 +132,7 @@ bool MqttClientKH::reconnect()
  //-----MQTT: try to send all PubSub topics---------------------
  if(!sendPubSubTopics())
  {
-  if(DEBUG_MQTT)Serial.println("failed, client state rc="+String(state()));
+  if(DEBUG_MQTT) { Serial.println("failed, client state: "+getsClientState(state())); };
   return false;
  }
  return true;
@@ -136,6 +172,7 @@ bool MqttClientKH::sendPubSubTopics()
   clientId += String(random(0xffff), HEX);
  }
  //-----Try to connect------------------------------------------
+ if(DEBUG_MQTT) Serial.println("sendPubSubTopics: clientId="+ clientId);
  if(connect(clientId.c_str()))
  {
   //-----Once connected, publish an announcement----------------

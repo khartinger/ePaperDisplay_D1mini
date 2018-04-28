@@ -1,4 +1,4 @@
-//_____D1_class_MqttClientKH.h________________170721-180305_____
+//_____D1_class_MqttClientKH.h________________170721-180428_____
 // The class MqttClient extends the class PubSubClient vor an
 //  easy use of mqtt.
 // You can use all commands from class PubSubClient as well.
@@ -65,6 +65,7 @@ class MqttClientKH : public PubSubClient {
   void clrPublish() { numPub_=0; };
   void setClientName(String sName) {sClientName=sName;};
   String getClientName() { return sClientName; };
+  String getsClientState(int client_state);        // NEW 180428
   //-----methods to setup WLAN and mqtt connection--------------
   bool setup_wifi();
   bool reconnect();
