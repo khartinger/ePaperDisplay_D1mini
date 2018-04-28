@@ -25,8 +25,7 @@
 #define  EPD_UPDATE_EVERY_N_MQTT  2
 
 // ***** change this values to your own WLAN data!!!************
-//MqttClientKH client("..ssid..", "..password..","mqttservername");
-MqttClientKH client("Raspi11", "Raspi11!!","192.168.1.1");
+MqttClientKH client("..ssid..", "..password..","mqttservername");
 
 EpdConnection connection(D6,D4,D3,D8,1);    //busy,reset,dc,cs,busyLevel
 Epd_ epd(connection);                       //the ePaperDisplay
