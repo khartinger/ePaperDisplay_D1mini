@@ -1,4 +1,4 @@
-//_____D1_class_MqttClientKH.cpp______________170721-180428_____
+//_____D1_class_MqttClientKH.cpp______________170721-180429_____
 // The class MqttClient extends the class PubSubClient vor an
 //  easy use of mqtt.
 // You can use all commands from class PubSubClient as well.

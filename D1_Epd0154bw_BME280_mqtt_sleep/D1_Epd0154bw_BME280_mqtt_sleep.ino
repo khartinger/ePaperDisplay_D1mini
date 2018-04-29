@@ -1,4 +1,4 @@
-//___D1_oop43_Epd0154bw_BME280_mqtt_sleep.ino___180405-180413___
+//___D1_oop43_Epd0154bw_BME280_mqtt_sleep.ino___180405-180429___
 // Measure temperature, humidity pressure/altitude with a BME280
 // every 5 seconds and display values on a 2-color
 // e-paper display (1,54 inch, 200x200 px, black amd white)
@@ -17,25 +17,28 @@
 #include "D1_class_MqttClientKH.h"
 #include "D1_class_BME280.h"
 #include "D1_class_Ain.h"
-#include "libs/D1_class_Epd_1in54bw.h"
-#include "libs/D1_class_EpdPainter.h"
-#define  CLIENT_NAME              "BME280_1"
+#include "src/D1_class_Epd_1in54bw.h"
+#include "src/D1_class_EpdPainter.h"
+#define  CLIENT_NAME              "BME280s1"
 #define  TOPIC_IN1                "date"
 #define  TOPIC_OUT1               "getDate"
-#define  TOPIC_OUT2               "BME280_1: "
-#define  DELAY_LOOP               5000           // ms
+#define  TOPIC_OUT2               CLIENT_NAME
 #define  DELAY_EPD                61             // ms
-#define  DELAY_MEASURE_S          600            // 600=10min  
+//#define  SLEEP_SEC                600            // 600=10min
+#define  SLEEP_SEC                10            // 10sec
+#define  DATA_SEP                 "|"
+#define  AWAKE_MAX_SEC            10
 
 // ***** change this values to your own WLAN data!!!************
-MqttClientKH client("..ssid..", "..password..","mqttservername");
+//MqttClientKH client("..ssid..", "..password..","mqttservername");
+MqttClientKH client("Raspi10", "12345678","10.1.1.1");
 
 EpdConnection connection(D6,D4,D3,D8,1);    //busy,reset,dc,cs,busyLevel
 Epd_ epd(connection);                       //the ePaperDisplay
 EpdPainter epdPainter(epd);                 //print methods
 BME280 bme280;                              // sensor object
 String datetime="?";                        // mqtt date, time
-int countdown_s=10;                         // sec
+int countdown_s=AWAKE_MAX_SEC;              // sec
 Ain ain;                                    // analog object for
 String vsupply;                             // 5V supply voltage
 
@@ -72,25 +75,27 @@ String partof(String s1, String sep, int num)
 void displayValues(String values)
 {
  //-----clear display-------------------------------------------
- epdPainter.clearDisplay();
- epdPainter.setFont(&Font20);
-  //-----print title---------------------------------------------
+ //epdPainter.clearDisplay();
+ //epdPainter.setFont(&Font20);
+ //-----print title---------------------------------------------
  int y=3;
- String s1="   BME280   ";
+ String s1=CLIENT_NAME;
+ int x=(200-s1.length()*Font20.Width)/2;
+ if(x<0) x=0;
  epdPainter.drawFilledRectangle(0,0,199,24,BLACK);
- epdPainter.drawStringAt(0,y,s1,WHITE);
+ epdPainter.drawStringAt(x,y,s1,WHITE);
  //-----print measure values------------------------------------
  y=y+24;
- s1="T="+partof(values, "|", 0)+"*C";
+ s1="T="+partof(values, DATA_SEP, 0)+"*C";
  epdPainter.drawStringAt(0,y,s1);
  y=y+20;
- s1="H="+partof(values, "|", 1)+"%";
+ s1="H="+partof(values, DATA_SEP, 1)+"%";
  epdPainter.drawStringAt(0,y,s1);
  y=y+20;
- s1="p="+partof(values, "|", 2)+" hPa";
+ s1="p="+partof(values, DATA_SEP, 2)+" hPa";
  epdPainter.drawStringAt(0,y,s1);
  y=y+20;
- s1="a="+partof(values, "|", 3)+"m";
+ s1="a="+partof(values, DATA_SEP, 3)+"m";
  epdPainter.drawStringAt(0,y,s1);
  //-----volage 5V power supply----------------------------------
  y=y+20;
@@ -130,6 +135,9 @@ void setup() {
   countdown_s=0;                            // 0=loop goto sleep
   //Serial.println("init failed.");
  }
+ //-----clear display-------------------------------------------
+ epdPainter.clearDisplay();
+ epdPainter.setFont(&Font20);
  //Serial.println("INIT OK");                 // init OK
  //-----init sensor BME280--------------------------------------
  if (!bme280.begin()) {
@@ -143,37 +151,48 @@ void setup() {
  //client.addSubscribe(String(TOPIC_OUT1));
  client.setCallback(callback);
  client.reconnect();  
+ //-----setup volage measurement--------------------------------
  ain.setRefPoints(0, 0.0, 840, 4.90);  // new ref values
 }
 
 //_____loop_____________________________________________________
 void loop() {
  //-----get all values at once----------------------------------
- String values=bme280.getsValues("|",1,1,0,1);
+ String values=bme280.getsValues(DATA_SEP,1,1,0,1);
  vsupply=ain.getsVoltage(3);
- //-----if connected: publish values----------------------------
+ //-----if connected: ask for date&time-------------------------
  if(client.isConnected())
  {
   client.publishString(TOPIC_OUT1, "?", true);   // true=retain
-  delay(100);
-  client.isConnected();
-  String s1=values+"|"+vsupply;
-  client.publishString(TOPIC_OUT2, s1, true);// true=retain
  }
  //-----update counter------------------------------------------
  countdown_s--;
  delay(1000);
- //-----countdown-timeout or date received -> goto sleep--------
+ //-----countdown-timeout or date received: finish work---------
  if((countdown_s<1) || (datetime!="?"))
  {
+  //-----publish values (try 5x)--------------------------------
+  int i=5;
+  while(i>0)
+  {
+   if(client.isConnected())
+   {
+    String s1=values+DATA_SEP+vsupply;
+    client.publishString(TOPIC_OUT2, s1, true); // true=retain
+    i=0;
+   }
+   i--;
+   delay(400);
+  }
+  //-----display values-----------------------------------------
   if(!epd.isBusy()) displayValues(values);
   //-----wait max. 10sec until display is ready for sleep-------
-  int i=100;
+  i=100;
   while((i>0) && epd.isBusy()) { i--; delay(100); };
   //-----display sleep, D1mini sleep----------------------------
   connection.sendCommand(DEEP_SLEEP_MODE);
   connection.sendData(1);
-  ESP.deepSleep(DELAY_MEASURE_S * 1000000L);   // usec
+  ESP.deepSleep(SLEEP_SEC * 1000000L);   // usec
   delay(200);
  }
 }

@@ -1,4 +1,4 @@
-//_____D1_oop42_Epd0154bw_BME280_mqtt.ino_____180405-180415_____
+//_____D1_oop42_Epd0154bw_BME280_mqtt.ino_____180405-180429_____
 // Measure temperature, humidity pressure/altitude with a BME280
 // every 5 seconds and display values on a 2-color
 // e-paper display (1,54 inch, 200x200 px, black amd white)
@@ -14,19 +14,19 @@
 
 #include "D1_class_MqttClientKH.h"
 #include "D1_class_BME280.h"
-#include "libs/D1_class_Epd_1in54bw.h"
-#include "libs/D1_class_EpdPainter.h"
-#define  CLIENT_NAME              "BME280_1"
+#include "src/D1_class_Epd_1in54bw.h"
+#include "src/D1_class_EpdPainter.h"
+#define  CLIENT_NAME              "BME280b"
 #define  TOPIC_IN1                "date"
 #define  TOPIC_OUT1               "getDate"
-#define  TOPIC_OUT2               "BME280_1: "
+#define  TOPIC_OUT2               CLIENT_NAME
 #define  DELAY_LOOP               5000           // ms
 #define  DELAY_EPD                61             // ms
 #define  EPD_UPDATE_EVERY_N_MQTT  2
 
 // ***** change this values to your own WLAN data!!!************
 //MqttClientKH client("..ssid..", "..password..","mqttservername");
-MqttClientKH client("Raspi11", "Raspi11!!","192.168.1.1");
+MqttClientKH client("Raspi10", "12345678","10.1.1.1");
 
 EpdConnection connection(D6,D4,D3,D8,1);    //busy,reset,dc,cs,busyLevel
 Epd_ epd(connection);                       //the ePaperDisplay
@@ -71,8 +71,10 @@ void displayValues(String values)
  epdPainter.setFont(&Font24);
  //-----print title---------------------------------------------
  int y=3;
- String s1="   BME280   ";
- epdPainter.drawFilledRectangle(0,0,199,26,BLACK);
+  String s1=CLIENT_NAME;
+ int x=(200-s1.length()*Font20.Width)/2;
+ if(x<0) x=0;
+ epdPainter.drawFilledRectangle(0,0,199,24,BLACK);
  epdPainter.drawStringAt(0,y,s1,WHITE);
  //-----print measure values------------------------------------
  y=y+28;
