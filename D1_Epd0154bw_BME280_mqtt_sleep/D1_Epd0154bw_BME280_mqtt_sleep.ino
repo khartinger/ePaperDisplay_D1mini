@@ -1,8 +1,8 @@
-//___D1_oop43_Epd0154bw_BME280_mqtt_sleep.ino___180405-180429___
+//_____D1_Epd0154bw_BME280_mqtt_sleep.ino_____180405-180501_____
 // Measure temperature, humidity pressure/altitude with a BME280
-// every 5 seconds and display values on a 2-color
+// display values on a 2-color
 // e-paper display (1,54 inch, 200x200 px, black amd white)
-// MQTT: * Send values with topic "BME280_1: " to a broker.
+// MQTT: * Send values with topic CLIENT_NAME to a broker.
 //       * Send topic "getDate" and wait for an answer with 
 //         topic date, payload YYYYmmdd HHMMSS
 // After sending the message D1mini goes to sleep for 10 minutes
@@ -23,11 +23,12 @@
 #define  TOPIC_IN1                "date"
 #define  TOPIC_OUT1               "getDate"
 #define  TOPIC_OUT2               CLIENT_NAME
-#define  DELAY_EPD                61             // ms
+#define  DELAY_EPD                78             // ms
 //#define  SLEEP_SEC                600            // 600=10min
 #define  SLEEP_SEC                10            // 10sec
 #define  DATA_SEP                 "|"
 #define  AWAKE_MAX_SEC            10
+#define  DEBUG3                   true
 
 // ***** change this values to your own WLAN data!!!************
 //MqttClientKH client("..ssid..", "..password..","mqttservername");
@@ -41,6 +42,7 @@ String datetime="?";                        // mqtt date, time
 int countdown_s=AWAKE_MAX_SEC;              // sec
 Ain ain;                                    // analog object for
 String vsupply;                             // 5V supply voltage
+long   millis_;
 
 //_____process all subscribed incoming messages_________________
 void callback(char* topic, byte* payload, unsigned int length)
@@ -49,8 +51,11 @@ void callback(char* topic, byte* payload, unsigned int length)
  String sTopic=String(topic);
  String sPayload="";
  for (int i=0; i<length; i++) sPayload+=(char)payload[i];
- //Serial.print("Message received for topic "+sTopic+"=");
- //Serial.println(sPayload);
+ if(DEBUG3)
+ {
+  Serial.print("Message received for topic "+sTopic+"=");
+  Serial.println(sPayload);
+ }
  if(sTopic=="date") { datetime=sPayload; }
 }
 
@@ -75,8 +80,8 @@ String partof(String s1, String sep, int num)
 void displayValues(String values)
 {
  //-----clear display-------------------------------------------
- //epdPainter.clearDisplay();
- //epdPainter.setFont(&Font20);
+ epdPainter.clearDisplay();
+ epdPainter.setFont(&Font20);
  //-----print title---------------------------------------------
  int y=3;
  String s1=CLIENT_NAME;
@@ -128,23 +133,24 @@ void displayValues(String values)
 
 //_____setup____________________________________________________
 void setup() {
- //Serial.begin(115200); Serial.println();    // init Serial
+ millis_=millis();
+ Serial.begin(115200); Serial.println();    // init Serial
  //-----try to init e-paper display-----------------------------
- //Serial.print("Init e-Paper Display: ");
+ if(DEBUG3) Serial.print("Init e-Paper Display: ");
  if (!epd.init()) {
   countdown_s=0;                            // 0=loop goto sleep
-  //Serial.println("init failed.");
+  if(DEBUG3) Serial.println("init failed.");
  }
  //-----clear display-------------------------------------------
  epdPainter.clearDisplay();
  epdPainter.setFont(&Font20);
- //Serial.println("INIT OK");                 // init OK
+ if(DEBUG3) Serial.println("INIT OK");      // init OK
  //-----init sensor BME280--------------------------------------
  if (!bme280.begin()) {
-  //Serial.println("BME280 missing - check wiring!");
+  if(DEBUG3) Serial.println("BME280 missing - check wiring!");
   countdown_s=0;                            // 0=loop goto sleep
  }
- //Serial.println("Sensor BME280 ready.");    // init OK
+ if(DEBUG3) Serial.println("Sensor BME280 ready.");  // init OK
  //-----connect to wifi, setup mqtt-----------------------------
  client.setClientName(String(CLIENT_NAME));
  client.addSubscribe("date");
@@ -152,47 +158,69 @@ void setup() {
  client.setCallback(callback);
  client.reconnect();  
  //-----setup volage measurement--------------------------------
- ain.setRefPoints(0, 0.0, 840, 4.90);  // new ref values
+ ain.setRefPoints(0, 0.0, 840, 4.90);       // new ref values
+ if(DEBUG3) Serial.println("setup ready!"); // init OK
 }
 
 //_____loop_____________________________________________________
 void loop() {
- //-----get all values at once----------------------------------
- String values=bme280.getsValues(DATA_SEP,1,1,0,1);
- vsupply=ain.getsVoltage(3);
- //-----if connected: ask for date&time-------------------------
- if(client.isConnected())
+ if(client.isConnected()) //-----connect successfull------------
  {
-  client.publishString(TOPIC_OUT1, "?", true);   // true=retain
- }
- //-----update counter------------------------------------------
- countdown_s--;
- delay(1000);
- //-----countdown-timeout or date received: finish work---------
- if((countdown_s<1) || (datetime!="?"))
- {
-  //-----publish values (try 5x)--------------------------------
-  int i=5;
-  while(i>0)
+  client.publishString(TOPIC_OUT1, "?", false);  // true=retain
+  //-----wait max. half time for date&time----------------------
+  int countdown=countdown_s*5;
+  bool wait_=true;
+  while((countdown>0)&&wait_)
   {
-   if(client.isConnected())
+   delay(50);
+   client.isConnected();
+   delay(50);
+   if(datetime!="?") wait_=false;
+   countdown--;
+  }
+  countdown+=countdown_s*5;
+  //-----use remaining time for sending measurement values------
+  bool bPub_=false, bEpd_=false;
+  while(countdown>0)
+  {
+   //-----get all values at once--------------------------------
+   String values=bme280.getsValues(DATA_SEP,1,1,0,1);
+   vsupply=ain.getsVoltage(3);
+   //-----(try to) publish values-------------------------------
+   if(client.isConnected()&&(!bPub_))
    {
     String s1=values+DATA_SEP+vsupply;
     client.publishString(TOPIC_OUT2, s1, true); // true=retain
-    i=0;
+    bPub_=true;
+    if(DEBUG3) Serial.println("Published: "+values);
    }
-   i--;
-   delay(400);
+   //-----(try to) display values-------------------------------
+   if((!epd.isBusy())&&(!bEpd_)) {
+    displayValues(values);
+    bEpd_=true;
+    if(DEBUG3) Serial.println("EPD displayed: "+values);
+   }
+   //-----wait for next trial-------------------------------- 
+   if(bPub_ && bEpd_) countdown=0;
+   else { countdown--; delay(100); }
   }
-  //-----display values-----------------------------------------
-  if(!epd.isBusy()) displayValues(values);
-  //-----wait max. 10sec until display is ready for sleep-------
-  i=100;
-  while((i>0) && epd.isBusy()) { i--; delay(100); };
-  //-----display sleep, D1mini sleep----------------------------
-  connection.sendCommand(DEEP_SLEEP_MODE);
-  connection.sendData(1);
-  ESP.deepSleep(SLEEP_SEC * 1000000L);   // usec
-  delay(200);
  }
+ else
+ {
+  if(DEBUG3) Serial.println("EPD: No Connection");
+  epdPainter.clearDisplay();
+  epdPainter.setFont(&Font20);
+  epdPainter.drawStringAt(5,5,"NO Connection");
+  epdPainter.drawStringAt(5,30,"to WLAN/MQTT");
+  epdPainter.display();
+ }
+ //-----display sleep, D1mini sleep----------------------------
+ connection.sendCommand(DEEP_SLEEP_MODE);
+ connection.sendData(1);
+ if(DEBUG3) {
+  Serial.print(String((millis()-millis_)));
+  Serial.println(" ms awake - Goto Sleep...");
+ }
+ ESP.deepSleep(SLEEP_SEC * 1000000L);   // usec
+ delay(200);
 }
