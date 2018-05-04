@@ -9,7 +9,7 @@
 #define D1_CLASS_MQTTCLIENTKH_H
 #include "Arduino.h"                   // 
 #include <ESP8266WiFi.h>               // WiFi
-#include "src/PubSubClient.h"          // use with /src
+#include "PubSubClient.h"              // use with /src
 #ifndef  MQTT_SSID
  #define MQTT_SSID      "ssid"         // wlan name
 #endif
