@@ -1,4 +1,4 @@
-//_____D1_class_MqttClientKH.h________________170721-180429_____
+//_____D1_class_MqttClientKH.h________________170721-180504_____
 // The class MqttClient extends the class PubSubClient vor an
 //  easy use of mqtt.
 // You can use all commands from class PubSubClient as well.
@@ -9,7 +9,7 @@
 #define D1_CLASS_MQTTCLIENTKH_H
 #include "Arduino.h"                   // 
 #include <ESP8266WiFi.h>               // WiFi
-#include "src/PubSubClient.h"          // use with /src
+#include "PubSubClient.h"              // use with /src
 #ifndef  MQTT_SSID
  #define MQTT_SSID      "ssid"         // wlan name
 #endif
