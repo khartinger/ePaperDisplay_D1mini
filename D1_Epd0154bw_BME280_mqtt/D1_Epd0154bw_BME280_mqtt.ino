@@ -12,10 +12,10 @@
 //               (I2C-address 0x76)
 // Important: Example needs a broker!
 
-#include "D1_class_MqttClientKH.h"
-#include "D1_class_BME280.h"
-#include "src/D1_class_Epd_1in54bw.h"
-#include "src/D1_class_EpdPainter.h"
+#include "src/mqtt/D1_class_MqttClientKH.h"
+#include "src/bme280/D1_class_BME280.h"
+#include "src/epd/D1_class_Epd_1in54bw.h"
+#include "src/epd/D1_class_EpdPainter.h"
 #define  CLIENT_NAME              "BME280b"
 #define  TOPIC_IN1                "date"
 #define  TOPIC_OUT1               "getDate"
