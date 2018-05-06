@@ -1,4 +1,4 @@
-//_____D1_oop41_Epd0154bw_BME280.ino__________180405-180413_____
+//_____D1_oop41_Epd0154bw_BME280.ino__________180405-180505_____
 // Measure temperature, humidity pressure/altitude with a BME280
 // every 5 seconds and display values on a 2-color
 // e-paper display (1,54 inch, 200x200 px, black and white)
@@ -7,9 +7,9 @@
 //               BUSY=D6, RST=D4, DC=D3, CS=D8, CLK=D5, DIN=D7.
 //           (3) BME280 connected to I2C: SCL=D1,SDA=D2,GND,3V3
 //               (I2C-address 0x76)
-#include "D1_class_BME280.h"
-#include "libs/D1_class_Epd_1in54bw.h"
-#include "libs/D1_class_EpdPainter.h"
+#include "src/bme280/D1_class_BME280.h"
+#include "src/epd/D1_class_Epd_1in54bw.h"
+#include "src/epd/D1_class_EpdPainter.h"
 
 EpdConnection connection(D6,D4,D3,D8,1);    //busy,reset,dc,cs,busyLevel
 Epd_ epd(connection);                       //the ePaperDisplay

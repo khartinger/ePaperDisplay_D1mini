@@ -1,11 +1,11 @@
 /**
-  ******************************************************************************
+  *****************************************************************************
   * @file    fonts.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    18-February-2014
+  * @version V1.1
+  * @date    18-February-2014, last update 26-April 2018
   * @brief   Header for fonts.c file
-  ******************************************************************************
+  *****************************************************************************
   * @attention
   *
   * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
@@ -32,23 +32,24 @@
   * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
-  ******************************************************************************
+  *****************************************************************************
   */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
+/* Define to prevent recursive inclusion ------------------------------------*/
 #ifndef __FONTS_H
 #define __FONTS_H
 
-/* Max size of bitmap will based on a font24 (17x24) */
-#define MAX_HEIGHT_FONT         32 // 24
-#define MAX_WIDTH_FONT          23 // 17
-#define OFFSET_BITMAP           69 // 54
+/* Max size of bitmap will based on a font32 (24x32), not font24 (17x24) */
+#define MAX_HEIGHT_FONT         32     // old 24
+#define MAX_WIDTH_FONT          23     // old 17
+#define OFFSET_BITMAP           69     // = 3*23, old 54
+#define FONTS_PROGMEM            1     // NEW 180426
 
 #ifdef __cplusplus
  extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
+/* Includes --------------------------------------------------*/
 #include <stdint.h>
 
 typedef struct _tFont
@@ -56,7 +57,7 @@ typedef struct _tFont
   const uint8_t *table;
   uint16_t Width;
   uint16_t Height;
-  
+  uint8_t  ProgMem;                    // NEW 180426
 } sFONT;
 
 extern sFONT Font24;
@@ -64,12 +65,14 @@ extern sFONT Font20;
 extern sFONT Font16;
 extern sFONT Font12;
 extern sFONT Font8;
+//-----add new font name here-----------------------------------
+extern sFONT Font20x11_255;            // NEW 180426
+extern sFONT Font24x11_255;            // NEW 180426
+extern sFONT pmFont24x11_255;          // NEW 180426
 
 #ifdef __cplusplus
 }
 #endif
   
 #endif /* __FONTS_H */
- 
-
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
