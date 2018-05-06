@@ -2,7 +2,7 @@
  *  @filename   :   D1_class_Epd_1in54bw.h (epd1in54.h)
  *  @brief      :   Header file for e-paper display library epd1in54.cpp
  *  @author     :   Yehui from Waveshare
- *  @update     :   Christian & Karl Hartinger, April 01 2018
+ *  @update     :   Christian & Karl Hartinger, May 01 2018
  *  
  *  Copyright (C) Waveshare     September 5 2017
  *
@@ -64,50 +64,56 @@ extern const unsigned char lut_partial_update[];
 
 // NEW 180401: class name changed from Epd to Epd_
 class Epd_ {
-public:
-    int width;
-    int height;
-    int colors;                             // NEW 180401
-    EpdConnection *conn;                    // NEW 180401
+ public:
+  int width;
+  int height;
+  int colors;                               // NEW 180401
+  EpdConnection *conn;                      // NEW 180401
 
-    Epd_();
-    Epd_(EpdConnection &connection);        // NEW 180401
-    ~Epd_();
-    bool init();                            // NEW 180401
-    bool reset();                           // NEW 180401
-    bool isBusy();                          // NEW 180401
-    void display(const unsigned char* frame_buffer_black, const unsigned char* frame_buffer_red); // NEW 180401
-    void setFullUpdate(bool full);          // NEW 180401
-    void sleep();                           // NEW 180401
-    void wakeup();                          // NEW 180401
+  Epd_();
+  Epd_(EpdConnection &connection);          // NEW 180401
+  ~Epd_();
+  bool init();                              // NEW 180401
+  bool reset();                             // NEW 180401
+  bool isBusy();                            // NEW 180401
+  void display(
+       const unsigned char* frame_buffer_black, 
+       const unsigned char* frame_buffer_red); // NEW 180401
+  void setFullUpdate(bool full);            // NEW 180401
+  void sleep();                             // NEW 180401
+  void wakeup();                            // NEW 180401
 
-protected:                                  // NEW 180401
-    //int  Init(const unsigned char* lut);  // NEW 180401
-    void SendCommand(unsigned char command);
-    void SendData(unsigned char data);
-    void WaitUntilIdle(void);
-    void Reset(void);
-    void SetFrameMemory(
-        const unsigned char* image_buffer,
-        int x,
-        int y,
-        int image_width,
-        int image_height
-    );
-    void ClearFrameMemory(unsigned char color);
-    void DisplayFrame(void);
-    void Sleep(void);
+  void displayNoWait(
+       const unsigned char* frame_buffer_black, 
+       const unsigned char* frame_buffer_red); //NEW 180501
+  void DisplayFrameNoWait(void);            // NEW 180501
 
-private:
-    unsigned int reset_pin;
-    unsigned int dc_pin;
-    unsigned int cs_pin;
-    unsigned int busy_pin;
-    const unsigned char* lut;
+ protected:                                 // NEW 180401
+ //int  Init(const unsigned char* lut);     // NEW 180401
+  void SendCommand(unsigned char command);
+  void SendData(unsigned char data);
+  void WaitUntilIdle(void);
+  void Reset(void);
+  void SetFrameMemory(
+       const unsigned char* image_buffer,
+       int x,
+       int y,
+       int image_width,
+       int image_height
+  );
+  void ClearFrameMemory(unsigned char color);
+  void DisplayFrame(void);
+  void Sleep(void);
 
-    void SetLut(const unsigned char* lut);
-    void SetMemoryArea(int x_start, int y_start, int x_end, int y_end);
-    void SetMemoryPointer(int x, int y);
+ private:
+  unsigned int reset_pin;
+  unsigned int dc_pin;
+  unsigned int cs_pin;
+  unsigned int busy_pin;
+  const unsigned char* lut;
+  void SetLut(const unsigned char* lut);
+  void SetMemoryArea(int x_start, int y_start, int x_end, int y_end);
+  void SetMemoryPointer(int x, int y);
 };
 
 #endif /* EPD1IN54_H */

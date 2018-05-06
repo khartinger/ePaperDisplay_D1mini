@@ -1,11 +1,13 @@
 # D1 mini with EPD 1.54inch: Counter
-Sketch: D1_Epd0154bw_Counter.ino, Version 2018-04-15   
+Sketch: D1_Epd0154bw_Counter.ino, Version 2018-05-05   
 [Deutsche Version](./LIESMICH.md "Deutsche Version")   
 
-Demo program to display a counter value on a 2-color epd (e-paper display: 1.54 inch, 200x200 px, black, white).
-* The counter counts in a loop from 100 to 999 and the counter value is printed to Serial.
-* Every 10th value is tried to be shown on the ep-display.
-* When a value is displayed successfully, !D! is added to Serial output.
+E-paper displays (EPD) need a lot of time to change the displayed content (from one  to over 10 seconds).   
+This demo program contents a counter and tries to display the counter value on a 2-color epd (e-paper display: 1.54 inch, 200x200 px, black, white).   
+__In detail:__   
+* The counter counts in 0.5s steps from 1 to 120.
+* Is the EDP ready, the counter value is displayed and stays stabil for 3.34s.
+* Every counter value is printed to Serial and a word for the action is added (`_SHOW`, `_busy` or `_wait`)
 
 ## Hardware
 * WeMos D1 Mini
@@ -17,14 +19,9 @@ Demo program to display a counter value on a 2-color epd (e-paper display: 1.54 
 ## Example for Serial output
 
 ```
- Init e-Paper Display: INIT OK
- 100_!D!
- 101  102  103  104  105  106  107  108  109  110_!D!
- 111  112  113  114  115  116  117  118  119  120_!D!
- 121  122  123  124  125  126  127  128  129  130_!D!
- 131  132  133  134  135  136  137  138  139  140_!D!
- 141  142  143  144  145  146  147  148  149  150_!D!
- 151  152  153  154  155  156  157  158  159  160_!D!
- 161  162  163  164  165  166  167  168  169  170_!D!
-```   
-
+Init e-Paper Display: INIT OK
+  1_SHOW    2_busy    3_busy    4_wait    5_wait    6_wait    7_wait    8_SHOW    9_busy   10_busy  
+ 11_wait   12_wait   13_wait   14_wait   15_SHOW   16_busy   17_busy   18_wait   19_wait   20_wait  
+ 21_wait   22_SHOW   23_busy   24_busy   25_wait   26_wait   27_wait   28_wait   29_SHOW   30_busy  
+ 31_busy   32_wait   33_wait   34_wait   35_wait   36_SHOW   37_busy   38_busy  
+```
