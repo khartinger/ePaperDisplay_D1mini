@@ -1,10 +1,10 @@
-//_____D1_Epd0154bw_Background.ino____________180401-180413_____
-// Demo program to display text and shapes on a 2-color
+//_____D1_Epd0154bw_Background.ino____________180401-180505_____
+// Demo program to display a image on a 2-color
 // e-paper display (1,54 inch, 200x200 px, black and white)
 
-#include "libs/D1_class_Epd_1in54bw.h"
-#include "libs/D1_class_EpdPainter.h"
-#include "imagedata.h"
+#include "src/epd/D1_class_Epd_1in54bw.h"
+#include "src/epd/D1_class_EpdPainter.h"
+#include "src/img/imagedata.h"
 
 EpdConnection connection(D6,D4,D3,D8,1);    //busy,reset,dc,cs,busyLevel
 Epd_ epd(connection);                       //the ePaperDisplay
