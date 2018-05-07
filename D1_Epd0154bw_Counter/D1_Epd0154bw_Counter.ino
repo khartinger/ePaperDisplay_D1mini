@@ -5,6 +5,9 @@
 // * The counter value ist printed to Serial.
 // * When a value is displayed, it stays displayed for 3,34sec.
 // * When a value is displayed, !D! is added to Serial output.
+// Created by Karl Hartinger, April 01, 2018,
+// Last modified 2018-05-07: Move class files to /src/...
+// Released into the public domain.
 
 #include "src/epd/D1_class_Epd_1in54bw.h"
 #include "src/epd/D1_class_EpdPainter.h"

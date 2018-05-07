@@ -13,6 +13,9 @@
 //           (3) BME280 connected to I2C: SCL=D1,SDA=D2,GND,3V3
 //               (I2C-address 0x76)
 // Important: Example needs a broker!
+// Created by Karl Hartinger, April 05, 2018,
+// Last Change May 05, 2018: Move class files to /src/...
+// Released into the public domain.
 
 #include "src/mqtt/D1_class_MqttClientKH.h"
 #include "src/bme280/D1_class_BME280.h"

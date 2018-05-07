@@ -1,6 +1,9 @@
 //_____D1_Epd0154bw_Background.ino____________180401-180505_____
 // Demo program to display a image on a 2-color
 // e-paper display (1,54 inch, 200x200 px, black and white)
+// Created by Karl Hartinger, April 01, 2018,
+// Last Change May 05, 2018: Move class files to /src/...
+// Released into the public domain.
 
 #include "src/epd/D1_class_Epd_1in54bw.h"
 #include "src/epd/D1_class_EpdPainter.h"

@@ -7,6 +7,9 @@
 //               BUSY=D6, RST=D4, DC=D3, CS=D8, CLK=D5, DIN=D7.
 //           (3) BME280 connected to I2C: SCL=D1,SDA=D2,GND,3V3
 //               (I2C-address 0x76)
+// Created by Karl Hartinger, April 05, 2018,
+// Last Change May 05, 2018: Move class files to /src/...
+// Released into the public domain.
 #include "src/bme280/D1_class_BME280.h"
 #include "src/epd/D1_class_Epd_1in54bw.h"
 #include "src/epd/D1_class_EpdPainter.h"
