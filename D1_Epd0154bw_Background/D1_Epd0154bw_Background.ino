@@ -7,7 +7,8 @@
 
 #include "src/epd/D1_class_Epd_1in54bw.h"
 #include "src/epd/D1_class_EpdPainter.h"
-#include "src/img/imagedata.h"
+//#include "src/img/imagedata.h"
+#include "src/img/maex200x200.h"
 
 EpdConnection connection(D6,D4,D3,D8,1);    //busy,reset,dc,cs,busyLevel
 Epd_ epd(connection);                       //the ePaperDisplay
@@ -34,7 +35,8 @@ void setup() {
  if(i<=0) Serial.println("\nDisplay not ready!");
  //-----clear display and print picture (background)------------
  epdPainter.clearDisplay();
- epdPainter.drawBackgroundFromProgmem(IMAGE_DATA);
+ //epdPainter.drawBackgroundFromProgmem(IMAGE_DATA);
+ epdPainter.drawBackgroundFromProgmem(IMAGE_MAEX200X200);
  epdPainter.display();
  Serial.println("END");
 }
