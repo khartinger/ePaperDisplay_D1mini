@@ -196,7 +196,8 @@ String EpdPainter::utf8ToEpd(String s)
       case 0xb5: s1=s1+"\xE6"; break;  //micro sign
       case 0xaa: s1=s1+"\xA6"; break;  //feminine ordinal indicator
       case 0xb2: s1=s1+"\xFD"; break;  //superscript 2
-      default: s1=s1+sUnknown;
+      //default: s1=s1+sUnknown;
+      default: s1=s1+"\xC2"; i--;
      }
      break;
     case 0xc3: //-----first byte is C3--------------------------
@@ -208,7 +209,8 @@ String EpdPainter::utf8ToEpd(String s)
       case 0xb6: s1=s1+"\x94"; break;  //o with diaeresis
       case 0xbc: s1=s1+"\x81"; break;  //u with diaeresis
       case 0x9f: s1=s1+"\xE1"; break;  //sharp s, beta
-      default: s1=s1+sUnknown;
+      //default: s1=s1+sUnknown;
+      default: s1=s1+"\xC3"; i--;
      }
      break;
     case 0xe2: //-----first byte is E2--------------------------
@@ -218,10 +220,11 @@ String EpdPainter::utf8ToEpd(String s)
        if(c3==0xAC) { s1=s1+"\x9E"; }  // Euro
                else { s1=s1+sUnknown; }
        break;
-      default: s1=s1+sUnknown;
+      //default: s1=s1+sUnknown;
+      default: s1=s1+"\xE2"; i--;
      }
      break;
-    default: //-----first byte unknown--------------------------
+    default: //-----first byte is no special--------------------
      //s1=s1+sUnknown; break;
      s1=s1+String(c1); i--; break;
    }
