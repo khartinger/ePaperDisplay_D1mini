@@ -146,6 +146,21 @@ void Epd_::display(const unsigned char* frame_buffer_black, const unsigned char*
 
 //***** END 180414 *********************************************
 
+void Epd_::displayNoWait(const unsigned char* frame_buffer_black, const unsigned char* frame_buffer_red)
+{
+  SetFrameMemory(frame_buffer_black, 0, 0, width, height);
+  DisplayFrameNoWait();
+}
+
+void Epd_::DisplayFrameNoWait(void) {
+  SendCommand(DISPLAY_UPDATE_CONTROL_2);
+  SendData(0xC4);
+  SendCommand(MASTER_ACTIVATION);
+  SendCommand(TERMINATE_FRAME_READ_WRITE);
+  //WaitUntilIdle();
+}
+//***** END 180527**********************************************
+
 /**
  *  @brief: basic function for sending commands
  */

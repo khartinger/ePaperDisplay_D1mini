@@ -2,7 +2,7 @@
  *  @filename   :   D1_class_Epd_2in9bw.h (epd2in9.h)
  *  @brief      :   Header file for e-paper display library epd2in9.cpp
  *  @author     :   Yehui from Waveshare
- *  @update     :   Christian & Karl Hartinger, April 14 2018
+ *  @update     :   Christian & Karl Hartinger, May 27, 2018
  *  
  *  Copyright (C) Waveshare     September 5 2017
  *
@@ -76,10 +76,17 @@ public:
     bool init();                            // NEW 180414
     bool reset();                           // NEW 180414
     bool isBusy();                          // NEW 180414
-    void display(const unsigned char* frame_buffer_black, const unsigned char* frame_buffer_red); // NEW 180414
+    void display(
+         const unsigned char* frame_buffer_black,
+         const unsigned char* frame_buffer_red); // NEW 180414
     void setFullUpdate(bool full);          // NEW 180414
     void sleep();                           // NEW 180414
     void wakeup();                          // NEW 180414
+
+  void displayNoWait(
+       const unsigned char* frame_buffer_black, 
+       const unsigned char* frame_buffer_red); //NEW 180527
+  void DisplayFrameNoWait(void);            // NEW 180527
 
 protected:                                  // NEW 180414
     //int  Init(const unsigned char* lut);  // NEW 180414

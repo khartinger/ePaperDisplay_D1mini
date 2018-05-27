@@ -2,7 +2,7 @@
 // Measure temperature, humidity pressure/altitude with a BME280
 // every 5 seconds and display values on a 2-color
 // e-paper display (2,9 inch, 128x296 px, black and white)
-// MQTT: * Send values with topic "BME280_1: " to a broker.
+// MQTT: * Send values with topic "BME280b" to a broker.
 //       * Send topic "getDate" and wait for an answer with 
 //         topic date, payload YYYYmmdd HHMMSS
 // Hardware: (1) WeMos D1 Mini

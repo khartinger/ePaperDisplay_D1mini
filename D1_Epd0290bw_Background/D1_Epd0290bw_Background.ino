@@ -1,10 +1,13 @@
-//_____D1_Epd0290bw_Background.ino____________180415-180415_____
+//_____D1_Epd0290bw_Background.ino____________180415-180527_____
 // Demo program to display a background picture on a 2-color
 // e-paper display (2,9 inch, 128x296 px, black and white)
+// Created by Karl Hartinger, April 01, 2018,
+// Last Change May 27, 2018: Move class files to /src/...
+// Released into the public domain.
 
-#include "libs/D1_class_Epd_2in9bw.h"
-#include "libs/D1_class_EpdPainter.h"
-#include "maex128x296.h"
+#include "src/epd/D1_class_Epd_2in9bw.h"
+#include "src/epd/D1_class_EpdPainter.h"
+#include "src/img/maex128x296.h"
 
 EpdConnection connection(D6,D4,D3,D8,1);    //busy,reset,dc,cs,busyLevel
 Epd_ epd(connection);                       //the ePaperDisplay

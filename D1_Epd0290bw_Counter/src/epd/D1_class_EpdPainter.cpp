@@ -168,3 +168,6 @@ void EpdPainter::display() {
  epd.display(frame1, frame2);
 }
 
+void EpdPainter::displayNoWait() {
+ epd.displayNoWait(frame1, frame2);
+}

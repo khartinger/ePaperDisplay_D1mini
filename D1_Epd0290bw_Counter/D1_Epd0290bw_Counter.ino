@@ -6,9 +6,12 @@
 // * Every 10th value is tried to be shown on the ep-display.
 // * When a value is displayed successfully, !D! is added to
 //   Serial output.
+// Created by Karl Hartinger, April 01, 2018,
+// Last Change May 27, 2018: Move class files to /src/...
+// Released into the public domain.
 
-#include "libs/D1_class_Epd_2in9bw.h"
-#include "libs/D1_class_EpdPainter.h"
+#include "src/epd/D1_class_Epd_2in9bw.h"
+#include "src/epd/D1_class_EpdPainter.h"
 #define   DELAY_LOOP         500            // 0,5s counter inc
 #define   DELAY_EPD           73            // ms needs display
 

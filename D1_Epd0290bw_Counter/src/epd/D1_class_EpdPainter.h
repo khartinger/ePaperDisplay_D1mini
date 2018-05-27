@@ -1,11 +1,11 @@
-﻿//_____D1_class_EpdPainter.h__________________180401-180412_____
+﻿//_____D1_class_EpdPainter.h__________________180401-180527_____
 // D1 mini class for painting text and shapes on a waveshare
 // e-paper display.
 
 #ifndef D1_CLASS_EPDPAINTER_H
 #define D1_CLASS_EPDPAINTER_H
 #include "Arduino.h"                   // 
-#include "D1_class_Epd_2in9bw.h"       // class Edp_
+#include "D1_class_Epd_2in9bw.h"      // class Edp_
 #include "D1_class_EpdPaint.h"         // class EdpPaint
 
 #define WHITE           0
@@ -53,5 +53,6 @@ class EpdPainter {
 //-----display methods------------------------------------------
   void clearDisplay();
   void display();
+  void displayNoWait();
 };
 #endif
