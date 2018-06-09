@@ -1,4 +1,4 @@
-﻿//_____D1_class_EpdPainter.cpp________________180401-180601_____
+﻿//_____D1_class_EpdPainter.cpp________________180401-180608_____
 // D1 mini class for painting text and shapes on a waveshare
 // e-paper display.
 // 180515: utf8ToEpd() added
@@ -33,7 +33,8 @@ EpdPainter::EpdPainter(Epd_ &epd){
 EpdPainter::~EpdPainter() {
     delete[] this->frame1;
     delete[] this->frame2;
- }
+}
+
 //**************************************************************
 //    drawing methods
 //**************************************************************
@@ -171,14 +172,14 @@ void EpdPainter::drawFilledEllipse(int x0, int y0, int x1, int y1, int color)
  if (paintColor!=NULL) paintColor->DrawFilledEllipse(x0,y0,x1,y1, (color==RED) ? 1 : 0);
 }
 
+//_____get font height of font, used in a object________________
 int EpdPainter::getFontHeight()
 {
- Serial.print("EpdPainter::getFontHeight()=");
- if(this->font==NULL) { Serial.println("NULL"); return (0); }
- Serial.println(font->Height);  
+ if(this->font==NULL) return (0);
  return font->Height;
 }
 
+//_____get font Width of font, used in a object_________________
 int EpdPainter::getFontWidth() 
 {
  if(this->font==NULL) return (0);
@@ -190,6 +191,9 @@ bool EpdPainter::isFont() {
  if(this->font==NULL) return false;
  return true;
 }
+
+//_____return pointer on font___________________________________
+sFONT* EpdPainter::getFont() { return this->font; }
 
 //**************************************************************
 //    display methods

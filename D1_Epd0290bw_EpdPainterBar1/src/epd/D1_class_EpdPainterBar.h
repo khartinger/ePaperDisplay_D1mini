@@ -1,4 +1,4 @@
-﻿//_____D1_class_EpdPainterBar.h_______________180601-180601_____
+﻿//_____D1_class_EpdPainterBar.h_______________180601-180608_____
 // D1 mini class that uses EpdPainter-class for painting 
 // a bargraph:
 // location: (x0,y0) lower left (x1,y1) upper right
@@ -26,6 +26,7 @@
 #define  BAR_VMIN                0     // minimum value
 #define  BAR_VMAX              100     // maximum value
 #define  BAR_VSTEP              20     // step size for scaling
+#define  BAR_DECIMALS            0
 #define  BAR_SCALE_FORMAT    "3.0"     // length.decimals
 #define  BAR_SCALE_FORMAT_MAX   10     // max length value
 //-----draw scale values (out of the frame!)--------------------
@@ -44,7 +45,6 @@ class EpdPainterBar {
   int    xgapbar;                      // x-gap frame - bar
   int    xgaptext;                     // x-gap text - scaleline
   double vmin, vmax, vstep;            // "real" values
-  String scaleformat;                  // format scale values
   int    colorFrame, colorBar;         // color frame, bar
  //-----constructor & co----------------------------------------
  public:
@@ -53,24 +53,23 @@ class EpdPainterBar {
                 int x0, int y0, int x1, int y1, 
                 int xscaleline, int xgapbar,
                 double vmin, double vmax, double vstep,
-                String scaleformat=String("3.0"),
                 int colorFrame=BLACK, int colorBar=BLACK);
   ~EpdPainterBar();
   void setup();
  //-----setter and getter methods-------------------------------
   bool setParams(int x0, int y0, int x1, int y1, 
                  int xscaleline, int xgapbar,
-                 double vmin, double vmax, double vstep,
-                 String scaleformat=String("3.0") );
-  void setFont(sFONT* font);
+                 double vmin, double vmax, double vstep);
  //-----draw methods--------------------------------------------
   void drawFrame();
   void drawFrame(int colorF);
   void drawBar(double value);
   void drawBar(double value, int colorB);
   void drawScale();
-  void drawScale(int style);
+  void drawScale(sFONT* font, String scaleformat);
+  void drawScale(sFONT* font, String scaleformat, int style);
  //-----working methods-----------------------------------------
-  int  getY(double value);
+  int    getY(double value);
+  String formatV(double value, String scaleformat);
 };
 #endif

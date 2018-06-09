@@ -1,4 +1,4 @@
-//_____D1_Epd0290bw_EpdPainterBar1.ino________180603-180603_____
+//_____D1_Epd0290bw_EpdPainterBar1.ino________180607-180608_____
 // Test bar graphics on a 
 // 2-color e-paper display (2,9 inch, 128x296 px, black, white).
 // Created by Karl Hartinger, June 03, 2018,
@@ -14,7 +14,8 @@ Epd_          epd(connection);              //the ePaperDisplay
 EpdPainter    epdPainter(epd);              //print methods
 
 EpdPainterBar bar(&epdPainter);             //default bar
-EpdPainterBar bar2(&epdPainter);            // user bar
+EpdPainterBar bar8(&epdPainter);            // user bar 8px text
+EpdPainterBar barX(&epdPainter);            // user bar text
 
 //_____setup____________________________________________________
 void setup() {
@@ -31,18 +32,32 @@ void setup() {
  epdPainter.setFont(&Font24x11_255);        // font
  epdPainter.setRotation(ROTATE_0);          // y=long side
  epdPainter.clearDisplay();                 // clear buffer
- //-----set bar parameter---------------------------------------
- bar2.setParams(44,150,84,290, 4,1, -20.0,50.0,10.0);
- //-----draw bar frames (no bar)-------------------------------- 
+  //-----draw default bar---------------------------------------
  bar.drawFrame();
- bar.setFont(&Font12);
  bar.drawScale();
- bar2.drawFrame();
- bar2.setFont(&Font20);
- bar2.drawScale(BAR_SCALE_LEFT | BAR_SCALE_Y_FRAMELIMIT);
- //-----draw bar with specified value---------------------------
  bar.drawBar(10);
- bar2.drawBar(45);
+ //-----bar with scale in Font8, 2 decimals, left side----------
+ int x0=100, dx=15;
+ int y0=211, dy=80;
+ bar8.setParams(x0,y0,x0+dx,y0+dy, 4,1, 0.0,1.0,0.25);
+ bar8.drawFrame();
+ bar8.drawScale(&Font8,"4.2",BAR_SCALE_LEFT|BAR_SCALE_Y_FRAMELIMIT);
+ bar8.drawBar(0.7);
+ //-----bar with text scaling-----------------------------------
+ x0=5, dx=30;
+ y0=145, dy=50;
+ epdPainter.setFont(&Font12);               // font
+ barX.setParams(x0,y0,x0+dx,y0+dy, 4,1, 0,4,1);
+ barX.drawFrame();
+ int xright=40;
+ int y=barX.getY(4) - Font12.Height/2;
+ epdPainter.drawStringAt(xright,y,"full");
+ y=barX.getY(2) - Font12.Height/2;
+ epdPainter.drawStringAt(xright,y,"half");
+ y=barX.getY(0) - Font12.Height/2;
+ epdPainter.drawStringAt(xright,y,"empty");
+ barX.drawBar(3);
+ //-----display buffer------------------------------------------
  epdPainter.display();                      // display value
 }
 

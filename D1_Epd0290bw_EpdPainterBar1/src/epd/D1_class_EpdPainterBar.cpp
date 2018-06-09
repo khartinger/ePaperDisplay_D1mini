@@ -1,4 +1,4 @@
-﻿//_____D1_class_EpdPainterBar.cpp_____________180601-180601_____
+﻿//_____D1_class_EpdPainterBar.cpp_____________180601-180608_____
 // D1 mini class that extends EpdPainter-class for painting 
 // text and shapes on a waveshare e-paper display:
 // * bargraph
@@ -22,7 +22,6 @@ EpdPainterBar::EpdPainterBar(EpdPainter *epdPainter1) {
  vmin=BAR_VMIN;
  vmax=BAR_VMAX;
  vstep=BAR_VSTEP;
- scaleformat=BAR_SCALE_FORMAT;
  colorFrame=BAR_COLOR_FRAME; 
  colorBar=BAR_COLOR_BAR;
  setup();
@@ -33,7 +32,6 @@ EpdPainterBar::EpdPainterBar( EpdPainter *epdPainter1,
                 int x0, int y0, int x1, int y1, 
                 int xscaleline, int xgapbar,
                 double vmin, double vmax, double vstep,
-                String scaleformat,
                 int colorFrame, int colorBar)
 {
  this->epdPainter_=epdPainter1;
@@ -50,7 +48,6 @@ EpdPainterBar::EpdPainterBar( EpdPainter *epdPainter1,
  this->xgapbar=xgapbar;
  this->vmin=vmin; this->vmax=vmax;
  this->vstep=vstep;
- this->scaleformat=scaleformat;
  this->colorFrame=colorFrame; this->colorBar=colorBar;
  setup();
 }
@@ -75,8 +72,6 @@ void EpdPainterBar::setup() {
   vstep=(vmax-vmin)/BAR_SUBDIV_MAX;
  }
  xgaptext=BAR_TEXT_XGAP_PIXEL;
- //-----set default font----------------------------------------
- if(!this->epdPainter_->isFont()) setFont(&Font12);
 }
 
 //**************************************************************
@@ -84,8 +79,7 @@ void EpdPainterBar::setup() {
 //**************************************************************
 bool EpdPainterBar::setParams(int x0, int y0, int x1, int y1, 
                  int xscaleline, int xgapbar,
-                 double vmin, double vmax, double vstep,
-                 String scaleformat)
+                 double vmin, double vmax, double vstep)
 {
  this->x0=x0; this->y0=y0;
  this->x1=x1; this->y1=y1;
@@ -93,14 +87,7 @@ bool EpdPainterBar::setParams(int x0, int y0, int x1, int y1,
  this->xgapbar=xgapbar;
  this->vmin=vmin; this->vmax=vmax; 
  this->vstep=vstep;
- this->scaleformat=scaleformat;
  setup();
-}
-
-//_____set font just for scaling________________________________
-void EpdPainterBar::setFont(sFONT* font)
-{
- this->epdPainter_->setFont(font);
 }
 
 //**************************************************************
@@ -159,28 +146,35 @@ void EpdPainterBar::drawBar(double value, int colorB) {
  drawBar(value);
 }
 
+//_____draw scale with default value decimalssSCALE_BOTH________
+void EpdPainterBar::drawScale() {
+ drawScale(epdPainter_->getFont(), BAR_SCALE_FORMAT, BAR_SCALE_BOTH); 
+}
+
 //_____draw scale with default value SCALE_BOTH_________________
-void EpdPainterBar::drawScale() { drawScale(BAR_SCALE_BOTH); }
+ void EpdPainterBar::drawScale(sFONT* font, String scaleformat){
+ drawScale(font, scaleformat, BAR_SCALE_BOTH); 
+}
 
 //_____draw scale with given style______________________________
-void EpdPainterBar::drawScale(int style) {
+void EpdPainterBar::drawScale(sFONT* font, String scaleformat, int style)
+{
  char cValue[BAR_SCALE_FORMAT_MAX+7];
- int fontheight_=epdPainter_->getFontHeight(); 
- int fontwidth_=epdPainter_->getFontWidth(); 
+ int fontheight_;
+ int fontwidth_;
  int imax;
- String sFormat="%"+scaleformat+"f\0";
+ String sV;
+ sFONT* pFontold;
  //-----check input values--------------------------------------
+ if(font==NULL) return;
+ fontheight_=font->Height; 
+ fontwidth_=font->Width; 
  if(style<1) return;
  if(fontheight_<1) return;
  if(vmax==vmin) return;
  //-----calculate text x-position(s)----------------------------
- int textlen=0;
- int pospoint=scaleformat.indexOf(".");
- if(pospoint==0) return;
- if(pospoint<0)  textlen=scaleformat.toInt();
- else textlen=scaleformat.substring(0,pospoint).toInt();
- if((textlen<1)||(textlen>BAR_SCALE_FORMAT_MAX)) return;
- int xleft=x0-xgaptext-textlen*fontwidth_;
+ sV=formatV(vmin, scaleformat);
+ int xleft=x0-xgaptext-sV.length()*fontwidth_;
  if(xleft<0) xleft=0;
  int xright=x1+xgaptext;
  //-----calculate min/max text y-position(s) (upper left)-------
@@ -195,17 +189,20 @@ void EpdPainterBar::drawScale(int style) {
   ymintext=getY(vmin)-ymiddle;
   ymaxtext=getY(vmax)-ymiddle;
  }
+ //-----save actual font----------------------------------------
+ pFontold=epdPainter_->getFont();
+ epdPainter_->setFont(font);
  //-----draw limit values---------------------------------------
- sprintf(cValue,sFormat.c_str(),vmin);
+ sV=formatV(vmin, scaleformat);
  if((style & BAR_SCALE_LEFT)>0)
-  epdPainter_->drawStringAt(xleft,ymintext,String(cValue));
+  epdPainter_->drawStringAt(xleft,ymintext,sV);
  if((style & BAR_SCALE_RIGHT)>0)
-  epdPainter_->drawStringAt(xright,ymintext,String(cValue));
- sprintf(cValue,sFormat.c_str(),vmax);
+  epdPainter_->drawStringAt(xright,ymintext,sV);
+ sV=formatV(vmax, scaleformat);
  if((style & BAR_SCALE_LEFT)>0)
-  epdPainter_->drawStringAt(xleft,ymaxtext,String(cValue));
+  epdPainter_->drawStringAt(xleft,ymaxtext,sV);
  if((style & BAR_SCALE_RIGHT)>0)
-  epdPainter_->drawStringAt(xright,ymaxtext,String(cValue));
+  epdPainter_->drawStringAt(xright,ymaxtext,sV);
  //-----draw subscale values------------------------------------
  if((style & BAR_SCALE_ONLY_LIMITS)==0)
  {
@@ -219,15 +216,15 @@ void EpdPainterBar::drawScale(int style) {
   {
    double v=0.0+vmin+i*vstep;
    int y=getY(v)-ymiddle;
-   sprintf(cValue,sFormat.c_str(),v);
-   String sV="";
-   int j=0; while(cValue[j]!=0) sV=sV+String(cValue[j++]);
+   sV=formatV(v, scaleformat);
    if((style & BAR_SCALE_LEFT)>0)
     epdPainter_->drawStringAt(xleft,y,sV);
    if((style & BAR_SCALE_RIGHT)>0)
     epdPainter_->drawStringAt(xright,y,sV);
   }
  }
+ //-----restore old font----------------------------------------
+ epdPainter_->setFont(pFontold);
 }
 
 //**************************************************************
@@ -241,4 +238,28 @@ int EpdPainterBar::getY(double value)
  if(value>vmax) value=vmax;
  int y=0.0+y1+(y0-y1)*(value-vmin)/(vmax-vmin);
  return y;
+}
+
+//_____format String as len.decimals____________________________
+String EpdPainterBar::formatV(double value, String scaleformat)
+{
+ int textlen=0, decimals=0;
+ int pospoint=scaleformat.indexOf(".");
+ if(pospoint==0) return "";            // no length value
+ if(pospoint<0) 
+  textlen=scaleformat.toInt();         // only length
+ else
+ {
+  textlen=scaleformat.substring(0,pospoint).toInt();
+  decimals=scaleformat.substring(pospoint+1).toInt();
+ }
+ if((textlen<1)||(textlen>BAR_SCALE_FORMAT_MAX)) return "";
+ if(pospoint>0)
+ {
+  if(textlen<=(decimals+1)) return "";
+ }
+ String sV=String(value, decimals);
+ //-----number right-justified---------------------------------- 
+ for(int i=0; i<textlen-sV.length(); i++) sV=" "+sV;
+ return sV;
 }

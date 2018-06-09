@@ -55,6 +55,7 @@ class EpdPainter {
   int  getFontHeight();
   int  getFontWidth();
   bool isFont();
+  sFONT* getFont();
  //-----display methods-----------------------------------------
   void clearDisplay();
   void display();
