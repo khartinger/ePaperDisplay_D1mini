@@ -78,7 +78,8 @@ String float2String(float f, int len, int decimals)
 }
 
 //_____show weather values on epd_______________________________
-bool displayValuesEpd(float ft_, float fh_, float fp_, float fb_, String sVsupply)
+bool displayValuesEpd(float ft_, float fh_, float fp_, float fb_,
+     String sVsupply, String sInfo)
 {
  //-----check if epd is ready-----------------------------------
  if(epd.isBusy()) return false;
@@ -105,7 +106,7 @@ bool displayValuesEpd(float ft_, float fh_, float fp_, float fb_, String sVsuppl
  epdPainter.drawStringAt(11,y+4*dy," "+sVsupply+" V");
  epdPainter.setFont(&Font16x8_255);
  epdPainter.drawFilledRectangle(0,275,127,295,BLACK); // info
- epdPainter.drawStringAt(5,278,datetime, WHITE);
+ epdPainter.drawStringAt(5,278,sInfo, WHITE);
  //-----text rotation test--------------------------------------
  epdPainter.setFont(&Font20x11_255);        // font
  epdPainter.setRotation(ROTATE_270);
@@ -205,7 +206,7 @@ void loop() {
    }
    //-----(try to) display values-------------------------------
    if((!epd.isBusy())&&(!bEpd_)) {
-    displayValuesEpd(t_, h_, p_, b_, vsupply);
+    displayValuesEpd(t_, h_, p_, b_, vsupply, datetime);
     bEpd_=true;
     if(DEBUG4) Serial.println("EPD displayed: "+sValues);
    }
@@ -216,12 +217,8 @@ void loop() {
  }
  else
  {
+  displayValuesEpd(t_, h_, p_, b_, vsupply, "No connection!");
   if(DEBUG4) Serial.println("EPD: No Connection");
-  epdPainter.clearDisplay();
-  epdPainter.setFont(&Font20);
-  epdPainter.drawStringAt(5,5,"NO Connection");
-  epdPainter.drawStringAt(5,30,"to WLAN/MQTT");
-  epdPainter.display();
  }
  //-----display sleep, D1mini sleep----------------------------
  connection.sendCommand(DEEP_SLEEP_MODE);
