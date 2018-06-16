@@ -1,4 +1,4 @@
-﻿//_____D1_class_EpdPainter.h__________________180401-180422_____
+﻿//_____D1_class_EpdPainter.h__________________180401-180601_____
 // D1 mini class for painting text and shapes on a waveshare
 // e-paper display.
 
@@ -24,6 +24,7 @@ class EpdPainter {
 
  //-----constructor & co----------------------------------------
  public:
+  EpdPainter() {};
   EpdPainter(Epd_ &epd);
   ~EpdPainter();
  
@@ -48,9 +49,18 @@ class EpdPainter {
   void drawBigLine(int x0, int y0, int x1, int y1, int color=BLACK);
   void drawBigCharAt(int x, int y, char ascii_char, int color=BLACK);
   void drawBigStringAt(int x, int y, String text, int color=BLACK);
- //-----display methods------------------------------------------
+  //-----NEW 2018-06-01-----------------------------------------
+  void drawEllipse(int x0, int y0, int x1, int y1, int color=BLACK);
+  void drawFilledEllipse(int x0, int y0, int x1, int y1, int color=BLACK);
+  int  getFontHeight();
+  int  getFontWidth();
+  bool isFont();
+  sFONT* getFont();
+ //-----display methods-----------------------------------------
   void clearDisplay();
   void display();
+  void displayNoWait();
+
  //-----helper functions----------------------------------------
  public:
   String utf8ToEpd(String s);

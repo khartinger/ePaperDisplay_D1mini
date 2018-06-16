@@ -1,9 +1,11 @@
-//_____D1_Epd0290bw_font24x11_255.ino_________180421-180424_____
+//_____D1_Epd0290bw_font24x11_255.ino_________180421-180616_____
 // Demo program to display (ASCII-)characters from 32 to 127 
 // and 128 to 255 alternating (10sec) on a 2-color
 // e-paper display (2,9 inch, 128x296 px, black and white)
-#include "libs/D1_class_Epd_2in9bw.h"
-#include "libs/D1_class_EpdPainter.h"
+// Created by Karl Hartinger, April 21, 2018
+// Last Change 2018-06-16: Update directory structure src
+// Released into the public domain.
+#include "src/epd/D1_class_EpdPainter.h"
 #define S(x) String((char)(x))
 
 EpdConnection connection(D6,D4,D3,D8,1);    //busy,reset,dc,cs,busyLevel

@@ -1,8 +1,10 @@
 /**
- *  @filename   :   D1_class_EpdPaint.cpp (epdpaint.cpp)
- *  @brief      :   Paint tools
- *  @author     :   Yehui from Waveshare
- *  @update     :   Christian & Karl Hartinger, April 26 2018
+ *  @filename: D1_class_EpdPaint.cpp (epdpaint.cpp)
+ *  @brief   : Paint tools
+ *  @author  : Yehui from Waveshare
+ *  @updates : by Christian & Karl Hartinger
+ *             2018-04-01 Add DrawLine, DrawTriangle, DrawBig...
+ *             2018-06-01 Add DrawEllipse
  *  
  *  Copyright (C) Waveshare     September 9 2017
  *  
@@ -28,7 +30,6 @@
 
 //#include "epdpaint.h"                     // NEW 180401
 #include "D1_class_EpdPaint.h"              // NEW 180401
-#include <pgmspace.h>                       // NEW 180426
 
 EpdPaint::EpdPaint(unsigned char* image, int width, int height) {
  this->rotate = ROTATE_0;
@@ -147,17 +148,12 @@ void EpdPaint::DrawPixel(int x, int y, int colored) {
  */
 void EpdPaint::DrawCharAt(int x, int y, char ascii_char, sFONT* font, int colored) {
  int i, j;
- unsigned char byte1;
  unsigned int char_offset = (ascii_char - ' ') * font->Height * (font->Width / 8 + (font->Width % 8 ? 1 : 0));
  const unsigned char* ptr = &font->table[char_offset];
+
  for (j = 0; j < font->Height; j++) {
   for (i = 0; i < font->Width; i++) {
-#ifdef FONTS_PROGMEM                   // NEW 180426
-   if(font->ProgMem>0) byte1=pgm_read_byte(ptr);
-   else 
-#endif                                 // NEW 180426
-   byte1=*ptr;
-   if (byte1 & (0x80 >> (i % 8))) {
+   if (*ptr & (0x80 >> (i % 8))) {
     DrawPixel(x + i, y + j, colored);
    }
    if (i % 8 == 7) {
@@ -170,35 +166,26 @@ void EpdPaint::DrawCharAt(int x, int y, char ascii_char, sFONT* font, int colore
  }
 }
 
-/**
- *  @brief: this draws a double size charactor on the frame buffer but not refresh
- */
 void EpdPaint::DrawBigCharAt(int x, int y, char ascii_char, sFONT* font, int colored) {
  int i, j;
- unsigned char byte1;
  unsigned int char_offset = (ascii_char - ' ') * font->Height * (font->Width / 8 + (font->Width % 8 ? 1 : 0));
  const unsigned char* ptr = &font->table[char_offset];
  for (j = 0; j < font->Height; j++) {
   for (i = 0; i < font->Width; i++) {
-#ifdef FONTS_PROGMEM                   // NEW 180426
-   if(font->ProgMem>0) byte1=pgm_read_byte(ptr);
-   else 
-#endif                                 // NEW 180426
-   byte1=*ptr;
-   if (byte1 & (0x80 >> (i % 8)))
+   if (*ptr & (0x80 >> (i % 8))) 
    {
     DrawPixel(x + 2*i,     y + j,     colored);
     DrawPixel(x + 2*i + 1, y + j,     colored);
     DrawPixel(x + 2*i,     y + j + 1, colored);
     DrawPixel(x + 2*i + 1, y + j + 1, colored);
    }
+
    if (i % 8 == 7) { ptr++; }
   }
   if (font->Width % 8 != 0) { ptr++; }
   y++;
  }
 }
-
 
 /**
 *  @brief: this displays a string on the frame buffer but not refresh
@@ -519,5 +506,58 @@ void EpdPaint::fillTriangle(int x0, int y0, int x1, int y1, int x2, int y2, int 
   }
  }
 }
+
+//**************************************************************
+// UPDATE June 2018
+//**************************************************************
+
+/**
+*  @brief: Draw a ellise (points: upper left, lower right)
+*    Added by Karl Hartinger
+*/
+void EpdPaint::DrawEllipse(int x0, int y0, int x1, int y1, int color)
+{
+ int xm=(x0+x1)/2, ym=(y0+y1)/2;  // center of the ellipse
+ int a=(x1-x0)/2, b=(y1-y0)/2;    // axis of the ellipse
+ if(a<0) a=-a;                    // make value positive
+ if(b<0) b=-b;                    // make value positive
+ int dx = 0, dy = b;              // I. Quadrant from upper left to lower right
+ long a2 = a*a, b2 = b*b;
+ long err = b2-(2*b-1)*a2, e2;    // error in 1st step
+ do {
+  DrawPixel(xm+dx, ym+dy, color); // I. Quadrant
+  DrawPixel(xm-dx, ym+dy, color); // II. Quadrant
+  DrawPixel(xm-dx, ym-dy, color); // III. Quadrant
+  DrawPixel(xm+dx, ym-dy, color); // IV. Quadrant
+  e2 = 2*err;
+  if (e2 <  (2*dx+1)*b2) { dx++; err += (2*dx+1)*b2; }
+  if (e2 > -(2*dy-1)*a2) { dy--; err -= (2*dy-1)*a2; }
+ } while (dy >= 0);
+ while (dx++ < a) {               // break, if flat ellipse (b=1)
+  DrawPixel(xm+dx, ym, color);    // -> draw top of ellipse
+  DrawPixel(xm-dx, ym, color);
+ }
+}
+
+void EpdPaint::DrawFilledEllipse(int x0, int y0, int x1, int y1, int color)
+{
+ int xm=(x0+x1)/2, ym=(y0+y1)/2;  // center of the ellipse
+ int a=(x1-x0)/2, b=(y1-y0)/2;    // axis of the ellipse
+ if(a<0) a=-a;                    // make value positive
+ if(b<0) b=-b;                    // make value positive
+ int dx = 0, dy = b;              // I. Quadrant from upper left to lower right
+ long a2 = a*a, b2 = b*b;
+ long err = b2-(2*b-1)*a2, e2;    // error in 1st step
+ do {
+  DrawLine(xm-dx, ym+dy, xm+dx, ym+dy, color);
+  DrawLine(xm-dx, ym-dy, xm+dx, ym-dy, color);
+  e2 = 2*err;
+  if (e2 <  (2*dx+1)*b2) { dx++; err += (2*dx+1)*b2; }
+  if (e2 > -(2*dy-1)*a2) { dy--; err -= (2*dy-1)*a2; }
+ } while (dy >= 0);
+ while (dx++ < a) {               // break, if flat ellipse (b=1)
+  DrawLine(xm-dx, ym, xm+dx, ym, color);
+ }
+} 
 
 /* END OF FILE */
