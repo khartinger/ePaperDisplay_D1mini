@@ -53,6 +53,10 @@ Ain ain;                               // analog object for
 String vsupply;                        // 5V supply voltage
 long   millis_;
 
+float t_,h_,p_,a_;        // temperature, humidity, pressure
+float b_;                 // brightness
+String sValues;           // measurement values
+
 //_____process all subscribed incoming messages_________________
 void callback(char* topic, byte* payload, unsigned int length)
 {
@@ -163,11 +167,13 @@ void setup() {
  ain.setRefPoints(0, 0.0, 840, 4.90);       // new ref values
  if(DEBUG4) Serial.println("setup ready!"); // init OK
  if(err) epdPainter.display();              // display value
+ //-----get all weather values--------------------------------
+ bme280.getValues(t_, h_, p_, a_);
+ b_=(float) bh1750.getBi();
+ vsupply=ain.getsVoltage(3);
+ String sValues=String(t_,1)+"*C"+DATA_SEP+String(h_,1)+"%"+DATA_SEP;
+ sValues+=String(p_,1)+"hPa"+DATA_SEP+String(b_,0)+"LX"+DATA_SEP+vsupply+"V";
 }
-
-float t_,h_,p_,a_;        // temperature, humidity, pressure
-float b_;                 // brightness
-String sValues;           // measurement values
 
 //_____loop_____________________________________________________
 void loop() {
@@ -190,12 +196,6 @@ void loop() {
   bool bPub_=false, bEpd_=false;
   while(countdown>0)
   {
-   //-----get all weather values--------------------------------
-   bme280.getValues(t_, h_, p_, a_);
-   b_=(float) bh1750.getBi();
-   vsupply=ain.getsVoltage(3);
-   String sValues=String(t_,1)+"*C"+DATA_SEP+String(h_,1)+"%"+DATA_SEP;
-   sValues+=String(p_,1)+"hPa"+DATA_SEP+String(b_,0)+"LX"+DATA_SEP+vsupply+"V";
    //-----(try to) publish values-------------------------------
    if(client.isConnected()&&(!bPub_))
    {
@@ -217,6 +217,7 @@ void loop() {
  }
  else
  {
+  
   displayValuesEpd(t_, h_, p_, b_, vsupply, "No connection!");
   if(DEBUG4) Serial.println("EPD: No Connection");
  }
