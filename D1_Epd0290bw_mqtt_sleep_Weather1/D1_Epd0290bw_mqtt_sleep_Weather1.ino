@@ -1,4 +1,4 @@
-//_____D1_Epd0290bw_mqtt_sleep_Weather1.ino___180513-180513_____
+//_____D1_Epd0290bw_mqtt_sleep_Weather1.ino___180513-180617_____
 // Little weather station with 2 sensors and e-paper display.
 // * BME280 (temperature, humidity, air pressure)
 // * BH1750 (light sensor) and a 
@@ -17,7 +17,7 @@
 // Important: (1) Example needs a broker!!!
 //            (2) Connect D0 to RST to wake up D1 mini!!!
 // Created by Karl Hartinger, June 13, 2018,
-// Last Change 2018-06-13: -
+// Last Change 2018-06-17: error_, loop empty
 // Released into the public domain.
 #include "src/mqtt/D1_class_MqttClientKH.h"
 #include "src/bh1750/D1_class_BH1750.h"
@@ -53,9 +53,11 @@ Ain ain;                               // analog object for
 String vsupply;                        // 5V supply voltage
 long   millis_;
 
-float t_,h_,p_,a_;        // temperature, humidity, pressure
-float b_;                 // brightness
+float t_=-273,h_=-1,p_=-1;// temperature, humidity, pressure
+float a_=-1;              // altitude        
+float b_=-1;              // brightness
 String sValues;           // measurement values
+int error_=0;             // 0=OK,1=EPD,2=MQTT,4=BH1750,8=BME280
 
 //_____process all subscribed incoming messages_________________
 void callback(char* topic, byte* payload, unsigned int length)
@@ -99,14 +101,29 @@ bool displayValuesEpd(float ft_, float fh_, float fp_, float fb_,
  int dy=19, y=275-5*dy;
  epdPainter.drawBigLine(0,y-5,127,y-5);
  epdPainter.setFont(&Font20x11_255);
- s1=float2String(ft_,6,1);
- epdPainter.drawStringAt(11,y,     s1+" "+DEG+"C");
- s1=float2String(fh_,6,1);
- epdPainter.drawStringAt(11,y+  dy,s1+" %");
- s1=float2String(fp_,6,1);
- epdPainter.drawStringAt(11,y+2*dy,s1+" hPa");
- s1=float2String(fb_,6,0);
- epdPainter.drawStringAt(11,y+3*dy,s1+" lx");
+ if((error_&8)>0)
+ {
+  epdPainter.drawStringAt(11,y,     "  BME280");
+  epdPainter.drawStringAt(11,y+  dy,"  ERROR!");
+ }
+ else
+ {
+  s1=float2String(ft_,6,1);
+  epdPainter.drawStringAt(11,y,     s1+" "+DEG+"C");
+  s1=float2String(fh_,6,1);
+  epdPainter.drawStringAt(11,y+  dy,s1+" %");
+  s1=float2String(fp_,6,1);
+  epdPainter.drawStringAt(11,y+2*dy,s1+" hPa");
+ }
+ if((error_&4)>0)
+ {
+  epdPainter.drawStringAt(0,y+3*dy,"BH1750 ERROR");
+ }
+ else
+ {
+  s1=float2String(fb_,6,0); 
+  epdPainter.drawStringAt(11,y+3*dy,s1+" lx");
+ }
  epdPainter.drawStringAt(11,y+4*dy," "+sVsupply+" V");
  epdPainter.setFont(&Font16x8_255);
  epdPainter.drawFilledRectangle(0,275,127,295,BLACK); // info
@@ -117,7 +134,7 @@ bool displayValuesEpd(float ft_, float fh_, float fp_, float fb_,
  epdPainter.drawStringAt(155,85,"Temperatur");
  epdPainter.setFont(&Font12);              // font
  epdPainter.setRotation(ROTATE_270);
- epdPainter.drawStringAt(134,114,"13.5.2018 K. Hartinger");
+ epdPainter.drawStringAt(134,114,"17.5.2018 K. Hartinger");
  epdPainter.setRotation(ROTATE_0);          // y=long side
  epdPainter.display();                      // display value
  return true;
@@ -130,7 +147,8 @@ void setup() {
  //-----try to init e-paper display-----------------------------
  if(DEBUG4) Serial.print("Init e-Paper Display: ");
  if (!epd.init()) {
-  countdown_s=0;                            // 0=loop goto sleep
+  error_=error_|1;
+//  countdown_s=0;                            // 0=loop goto sleep
   if(DEBUG4) Serial.println("init failed.");
  }
  //-----some more display inits---------------------------------
@@ -139,44 +157,39 @@ void setup() {
  epdPainter.setRotation(ROTATE_0);          // y=long side
  epdPainter.clearDisplay();                 // clear buffer
  if(DEBUG4) Serial.println("OK");           // init OK
- epdPainter.drawFilledRectangle(0,275,127,295,BLACK); // info
- bool err=false;
+ //-----check for BME280----------------------------------------
+ if (!bme280.begin())
+ {
+  if(DEBUG4) Serial.println("BME280 missing - check wiring!");
+//  countdown_s=0;                            // 0=loop goto sleep
+  epdPainter.drawStringAt(0,279,"BME280 ERROR",WHITE);
+  error_=error_|8;
+ }
  //-----check for BH1750----------------------------------------
  int status=bh1750.getStatus();
  if(status!=BH1750_OK)
  {
   Serial.println("Init BH1750 failed!");
   epdPainter.drawStringAt(0,279,"BH1750 ERROR",WHITE);
-  err=true;
- }
- //-----check for BME280----------------------------------------
- if (!bme280.begin())
- {
-  if(DEBUG4) Serial.println("BME280 missing - check wiring!");
-  countdown_s=0;                            // 0=loop goto sleep
-  epdPainter.drawStringAt(0,279,"BME280 ERROR",WHITE);
-  err=true;
+  error_=error_|4;
  }
  //-----connect to wifi, setup mqtt-----------------------------
  client.setClientName(String(CLIENT_NAME));
  client.addSubscribe("date");
  //client.addSubscribe(String(TOPIC_OUT1));
  client.setCallback(callback);
- client.reconnect();  
- //-----setup volage measurement--------------------------------
+ client.reconnect();
+ //-----setup voltage measurement-------------------------------
  ain.setRefPoints(0, 0.0, 840, 4.90);       // new ref values
  if(DEBUG4) Serial.println("setup ready!"); // init OK
- if(err) epdPainter.display();              // display value
- //-----get all weather values--------------------------------
- bme280.getValues(t_, h_, p_, a_);
- b_=(float) bh1750.getBi();
+ //-----get battery voltage-------------------------------------
  vsupply=ain.getsVoltage(3);
+ //-----get weather values--------------------------------------
+ if((error_&4)==0) b_=(float) bh1750.getBi(); 
+ if((error_&8)==0) bme280.getValues(t_, h_, p_, a_);  
  String sValues=String(t_,1)+"*C"+DATA_SEP+String(h_,1)+"%"+DATA_SEP;
  sValues+=String(p_,1)+"hPa"+DATA_SEP+String(b_,0)+"LX"+DATA_SEP+vsupply+"V";
-}
-
-//_____loop_____________________________________________________
-void loop() {
+ //-----check for connection------------------------------------
  if(client.isConnected()) //-----connect successfull------------
  {
   client.publishString(TOPIC_OUT1, "?", false);  // true=retain
@@ -205,7 +218,9 @@ void loop() {
     delay(100);
    }
    //-----(try to) display values-------------------------------
-   if((!epd.isBusy())&&(!bEpd_)) {
+   if((!epd.isBusy())&&(!bEpd_)) 
+   {
+    if(datetime=="?") datetime="No MQTT DateTime";
     displayValuesEpd(t_, h_, p_, b_, vsupply, datetime);
     bEpd_=true;
     if(DEBUG4) Serial.println("EPD displayed: "+sValues);
@@ -215,9 +230,9 @@ void loop() {
    else { countdown--; delay(100); }
   }
  }
- else
+ else //-----ERROR: no connection to WLAN/MQTT server-----------
  {
-  
+  error_=error_|2;
   displayValuesEpd(t_, h_, p_, b_, vsupply, "No connection!");
   if(DEBUG4) Serial.println("EPD: No Connection");
  }
@@ -230,5 +245,9 @@ void loop() {
  }
  ESP.deepSleep(SLEEP_SEC * 1000000L);   // usec
  delay(200);
+}
+
+//_____loop_____________________________________________________
+void loop() {
 }
 
