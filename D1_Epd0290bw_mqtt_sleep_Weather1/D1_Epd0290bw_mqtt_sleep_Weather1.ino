@@ -71,7 +71,7 @@ void callback(char* topic, byte* payload, unsigned int length)
   Serial.print("Message received for topic "+sTopic+"=");
   Serial.println(sPayload);
  }
- if(sTopic=="date") { datetime=sPayload; }
+ if(sTopic==TOPIC_IN1) { datetime=sPayload; }
 }
 
 //_____float to String__________________________________________
@@ -175,7 +175,7 @@ void setup() {
  }
  //-----connect to wifi, setup mqtt-----------------------------
  client.setClientName(String(CLIENT_NAME));
- client.addSubscribe("date");
+ client.addSubscribe(TOPIC_IN1);
  //client.addSubscribe(String(TOPIC_OUT1));
  client.setCallback(callback);
  client.reconnect();
